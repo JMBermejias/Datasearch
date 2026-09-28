@@ -71,7 +71,7 @@ La aplicación queda disponible en el menú de aplicaciones y también en la
 terminal:
 
 ```bash
-datasearch-tauri
+datasearch
 ```
 
 Dependencias del sistema (ya incluidas normalmente en Zorin OS):

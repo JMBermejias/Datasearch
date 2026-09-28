@@ -1017,7 +1017,7 @@ checksum = "4583a4551df46e2792f82ceeac45e850d2e2d5debba0b91f102385cda5b11f06"
 
 [[package]]
 name = "datasearch-core"
-version = "1.0.0"
+version = "1.0.1"
 dependencies = [
  "argon2",
  "base64 0.22.1",
@@ -1053,7 +1053,7 @@ dependencies = [
 
 [[package]]
 name = "datasearch-tauri"
-version = "1.0.0"
+version = "1.0.1"
 dependencies = [
  "base64 0.22.1",
  "datasearch-core",

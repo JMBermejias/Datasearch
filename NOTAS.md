@@ -1,4 +1,4 @@
-# DataSearch 1.0.0
+# DataSearch 1.0.1
 
 **Copyright (c) 2026 Jose Manuel Bernabeu Mejias · Licencia MIT**
 
@@ -46,6 +46,17 @@ Cambie la contrasena en cuanto entre: **Credenciales → Cambiar contrasena**.
 
 El resto de usuarios se registran indicando todos sus datos personales; la
 cuenta queda pendiente hasta que el administrador la verifica.
+
+## Correcciones de esta version
+
+- **Se corrige el icono del escritorio.** El fichero `.desktop` declaraba
+  `Icon=datasearch` pero los iconos se instalaban como `datasearch-tauri.png`,
+  de modo que el nombre no coincidia y Zorin OS mostraba el icono generico.
+  Ahora el ejecutable se llama `datasearch` y tanto el icono como la linea
+  `Exec` usan ese mismo nombre.
+- La plantilla `.desktop` usa ya las variables de Tauri (`{{exec}}` e
+  `{{icon}}`) en lugar de valores fijos, de modo que la coincidencia se
+  mantiene aunque cambie el nombre del binario.
 
 ## Novedades de esta version
 

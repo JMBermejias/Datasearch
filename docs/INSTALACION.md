@@ -28,7 +28,7 @@ La aplicación aparece en el menú de aplicaciones bajo el nombre **DataSearch**
 y también se puede lanzar desde la terminal:
 
 ```bash
-datasearch-tauri
+datasearch
 ```
 
 ### Desinstalación

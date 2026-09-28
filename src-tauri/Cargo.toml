@@ -6,7 +6,15 @@ authors.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
-default-run = "datasearch-tauri"
+default-run = "datasearch"
+
+# El nombre del binario es el que Tauri usa para el icono del escritorio
+# (datasearch.png) y para la linea Exec del fichero .desktop. Con el nombre
+# "datasearch-tauri" el icono instalado no coincidia con el que declara el
+# escritorio, y Zorin OS mostraba el icono generico.
+[[bin]]
+name = "datasearch"
+path = "src/main.rs"
 
 [lib]
 name = "datasearch_lib"
