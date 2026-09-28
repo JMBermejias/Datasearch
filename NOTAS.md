@@ -1,4 +1,4 @@
-# DataSearch 1.0.2
+# DataSearch 1.0.3
 
 **Copyright (c) 2026 Jose Manuel Bernabeu Mejias · Licencia MIT**
 
@@ -47,7 +47,19 @@ Cambie la contrasena en cuanto entre: **Credenciales → Cambiar contrasena**.
 El resto de usuarios se registran indicando todos sus datos personales; la
 cuenta queda pendiente hasta que el administrador la verifica.
 
-## Mejoras de esta version
+## Correccion importante
+
+- **Se corrige el tamano desmedido de los iconos.** Los iconos se dibujaban
+  sin medidas propias y, en los contenedores sin regla especifica, ocupaban el
+  100 % del hueco disponible: llegaban a medir 1250 x 1250 px y obligaban a
+  desplazarse hacia abajo para poder trabajar. Afectaba al panel de control, a
+  fuentes de datos, a usuarios y a ajustes.
+
+  La correccion actsua en tres niveles: tamano minimo en el propio icono,
+  limite global para que ningun icono pueda ocupar todo su hueco, y reglas
+  concretas por componente.
+
+## Mejoras de la version anterior
 
 - **La aplicacion arranca con la ventana maximizada**, ocupando todo el
   espacio disponible de la pantalla, tanto al abrirla desde el menu de

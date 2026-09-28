@@ -382,6 +382,25 @@ body {
   flex-shrink: 0;
 }
 
+/* ---------------------------------------------------------------- */
+/* Iconos: red de seguridad                                          */
+/* ---------------------------------------------------------------- */
+
+/* Si un icono se coloca en un contenedor sin regla propia, este limite
+   impide que se dibuje al tamano completo del hueco available. El atributo
+   `width`/`height` del propio SVG actúa como segundo limite. */
+.ic {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+}
+
+/* Un icono nunca se estira ni se deforma dentro de un contenedor flexible. */
+svg {
+  flex-shrink: 0;
+  max-width: 100%;
+}
+
 .btn.principal {
   background: var(--azul);
   border-color: var(--azul);
@@ -1014,16 +1033,87 @@ table.datos tbody td.numero {
 }
 
 .vacio-estado svg {
-  width: 42px;
-  height: 42px;
+  width: 36px;
+  height: 36px;
   color: var(--azul-claro);
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .vacio-estado .titulo {
   font-weight: 650;
   color: var(--azul-oscuro);
   margin-bottom: 4px;
+}
+
+/* ---------------------------------------------------------------- */
+/* Iconos por componente                                             */
+/* ---------------------------------------------------------------- */
+
+/* Cabecera de las tarjetas: aparece en todas las paginas */
+.tarjeta-cabecera svg,
+.tarjeta-cabecera h2 svg,
+.tarjeta-cabecera h3 svg {
+  width: 17px;
+  height: 17px;
+}
+
+.seccion-titulo svg {
+  width: 16px;
+  height: 16px;
+}
+
+.modal-cabecera svg {
+  width: 18px;
+  height: 18px;
+}
+
+.insignia svg {
+  width: 13px;
+  height: 13px;
+}
+
+.lateral-actualizacion svg,
+.lateral-cabecera svg {
+  width: 14px;
+  height: 14px;
+}
+
+.cabecera svg,
+.cabecera-acciones svg {
+  width: 16px;
+  height: 16px;
+}
+
+.tarjeta-actualizacion svg,
+.tarjeta-cabecera .acciones svg,
+.tarjeta-pie svg {
+  width: 15px;
+  height: 15px;
+}
+
+.widget-cabecera svg,
+.dato-ficha svg,
+.caja-info svg {
+  width: 15px;
+  height: 15px;
+}
+
+.acceso-marca svg {
+  width: 28px;
+  height: 28px;
+}
+
+.acceso-caracteristicas svg,
+.desplegable-opcion svg,
+.chip svg,
+.dato-ficha svg {
+  width: 14px;
+  height: 14px;
+}
+
+.vacio-estado svg {
+  width: 36px;
+  height: 36px;
 }
 
 /* ---------------------------------------------------------------- */

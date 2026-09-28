@@ -71,8 +71,14 @@ const TRAZOS: Record<string, string> = {
 /** Devuelve el marcado SVG de un icono por su nombre. */
 export function icono(nombre: string, clase = ""): string {
   const trazo = TRAZOS[nombre] ?? TRAZOS.info;
-  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-    stroke-linecap="round" stroke-linejoin="round" class="${clase}" aria-hidden="true">${trazo}</svg>`;
+  // Los atributos `width` y `height` son el tamano minimo de seguridad: si
+  // algun contenedor no tiene regla CSS para `svg`, el icono se dibujaria al
+  // 100 % del hueco y empujaria el contenido hacia abajo. Las reglas CSS
+  // pisan estos atributos, de modo que el tamano real sigue siendo el que
+  // marque cada componente.
+  return `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+    stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="ic ${clase}"
+    aria-hidden="true">${trazo}</svg>`;
 }
 
 /** Nombres de todos los iconos disponibles. */
