@@ -83,13 +83,15 @@ jobs:
         run: npm run typecheck
 
       - name: Compilar el paquete de Linux
-        run: npm run tauri build -- --bundles deb,appimage
+        # AppImage exige FUSE, que no esta disponible en el runner. Se genera
+        # unicamente el paquete .deb, que es el que se instala con apt.
+        run: npm run tauri build -- --bundles deb
 
       - name: Recoger los paquetes generados
         run: |
           mkdir -p Artefactos
           find target/release/bundle -name "*.deb"   -exec cp {} Artefactos/ \;
-          find target/release/bundle -name "*.AppImage" -exec cp {} Artefactos/ \;
+          find target/release/bundle -name "*.AppImage" -exec cp {} Artefactos/ \; 2>/dev/null || true
           ls -la Artefactos/
 
       - name: Subir los paquetes como artefacto
@@ -109,8 +111,21 @@ jobs:
       - name: Obtener el codigo fuente
         uses: actions/checkout@v4
 
+      - name: Preparar JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
       - name: Preparar el SDK de Android
         uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools,build-tools-34.0.0,platforms;android-34
+
+      - name: Aceptar las licencias del SDK de Android
+        run: |
+          yes | sdkmanager --licenses > /dev/null 2>&1 || true
+          sdkmanager --list_installed | head -20
 
       - name: Instalar Rust estable con el objetivo Android
         uses: dtolnay/rust-toolchain@stable
