@@ -626,7 +626,7 @@ async fn elegir_esquema(
 
     mejor
         .map(|(_, e, c)| (e.clone(), c))
-        .ok_or_else(|| Error::SinResultados)
+        .ok_or(Error::SinResultados)
 }
 
 /// Los graficos que el panel de control incluye siempre.

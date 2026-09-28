@@ -144,7 +144,7 @@ impl ServicioAuth {
             cargo: "Administrador de DataSearch".into(),
             motivo_solicitud: "Cuenta de propiedad del autor de la aplicacion".into(),
         };
-        let hash = Self::hashear(&CONTRASENA_ADMIN_DEFECTO).unwrap_or_default();
+        let hash = Self::hashear(CONTRASENA_ADMIN_DEFECTO).unwrap_or_default();
         match self.db.insertar_usuario(
             USUARIO_ADMIN_DEFECTO,
             &hash,

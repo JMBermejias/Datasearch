@@ -701,7 +701,7 @@ async fn consultar_postgres(
                 qc = qc.bind(p);
             }
             if let Ok(r) = qc.fetch_one(&pool).await {
-                if let Some(n) = r.try_get::<i64, _>(0).ok() {
+                if let Ok(n) = r.try_get::<i64, _>(0) {
                     total += n;
                 }
             }
@@ -862,7 +862,7 @@ async fn consultar_mysql(
                 qc = qc.bind(p);
             }
             if let Ok(r) = qc.fetch_one(&mut conn).await {
-                if let Some(n) = r.try_get::<i64, _>(0).ok() {
+                if let Ok(n) = r.try_get::<i64, _>(0) {
                     total += n;
                 }
             }
@@ -1395,7 +1395,7 @@ fn parsear_csv(texto: &str) -> Resultado<Vec<Fila>> {
 
 fn detectar_delimitador(texto: &str) -> u8 {
     let primera_linea = texto.lines().find(|l| !l.trim().is_empty()).unwrap_or("");
-    let candidatos = [b',', b';', b'\t', b'|'];
+    let candidatos = *b",;\t|";
     let mut mejor = b',';
     let mut mejor_cuenta = 0usize;
     for c in candidatos {
@@ -1493,8 +1493,8 @@ fn parsear_xml(texto: &str) -> Resultado<Vec<Fila>> {
     use quick_xml::Reader;
 
     let mut lector = Reader::from_str(texto);
-    let _ = lector.config_mut().trim_text(true);
-    let _ = lector.config_mut().check_end_names = false;
+    lector.config_mut().trim_text(true);
+    lector.config_mut().check_end_names = false;
 
     let mut filas: Vec<Fila> = Vec::new();
     // Pila de rutas de los elementos abiertos.
@@ -1868,8 +1868,8 @@ pub fn valor_numerico(bloque: &BloqueResultados, columna: &str) -> Option<f64> {
         .columnas
         .iter()
         .find(|c| c.nombre == columna)
-        .and_then(|_| None::<f64>)
-        .or_else(|| None)
+        .and(None::<f64>)
+        .or(None)
 }
 
 /// Traduce un `Predicado` a su descripcion legible, para las advertencias.

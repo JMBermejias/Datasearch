@@ -1082,7 +1082,7 @@ fn a_csv_interno(columnas: &[String], datos: &[Vec<String>]) -> String {
 }
 
 fn escapar_csv(valor: &str) -> String {
-    let v = valor.replace('\r', " ").replace('\n', " ");
+    let v = valor.replace(['\r', '\n'], " ");
     if v.contains(';') || v.contains('"') {
         format!("\"{}\"", v.replace('"', "\"\""))
     } else {
@@ -1387,10 +1387,7 @@ pub fn documento_vacio(doc: &Documento) -> bool {
 pub fn preparar_imagen(base64_png: &str, titulo: &str) -> Option<ImagenDocumento> {
     let bytes = decodificar_base64(base64_png)?;
     let imagen = image::load_from_memory_with_format(&bytes, image::ImageFormat::Png).ok()?;
-    let (ancho, alto) = (
-        u32::try_from(imagen.width()).unwrap_or(0),
-        u32::try_from(imagen.height()).unwrap_or(0),
-    );
+    let (ancho, alto) = (imagen.width(), imagen.height());
     Some(ImagenDocumento {
         titulo: titulo.to_string(),
         base64: base64_png.to_string(),

@@ -279,19 +279,25 @@ mod tests {
 
     #[test]
     fn valida_ruta_de_fichero_inexistente() {
-        let mut c = ConfigFuente::default();
-        c.ruta = "/no/existe/este/fichero.csv".into();
-        let r = ServicioFuentes::validar_config(TipoFuente::Csv, &c);
-        assert!(r.is_err());
+        let c = ConfigFuente {
+            ruta: "/no/existe/este/fichero.csv".into(),
+            ..Default::default()
+        };
+        assert!(ServicioFuentes::validar_config(TipoFuente::Csv, &c).is_err());
     }
 
     #[test]
     fn valida_url_web() {
-        let mut c = ConfigFuente::default();
-        c.ruta = "no-es-una-url".into();
-        assert!(ServicioFuentes::validar_config(TipoFuente::Web, &c).is_err());
-        c.ruta = "https://ejemplo.es/datos.csv".into();
-        assert!(ServicioFuentes::validar_config(TipoFuente::Web, &c).is_ok());
+        let mala = ConfigFuente {
+            ruta: "no-es-una-url".into(),
+            ..Default::default()
+        };
+        assert!(ServicioFuentes::validar_config(TipoFuente::Web, &mala).is_err());
+        let buena = ConfigFuente {
+            ruta: "https://ejemplo.es/datos.csv".into(),
+            ..Default::default()
+        };
+        assert!(ServicioFuentes::validar_config(TipoFuente::Web, &buena).is_ok());
     }
 
     #[test]

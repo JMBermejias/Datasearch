@@ -339,7 +339,7 @@ fn seccion_histograma(columnas: &[ColumnaInfo], filas: &[Fila]) -> Resultado<Sec
             continue;
         }
         let stats = estadisticas(&valores);
-        let cortes = vec![
+        let cortes = [
             ("Menor o igual que", stats.min),
             ("Primer cuartil", stats.q1),
             ("Mediana", stats.mediana),

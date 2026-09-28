@@ -92,7 +92,7 @@ pub fn a_f64(valor: &str) -> Option<f64> {
         }
         (Some(_), None) => limpio.replace(',', "."),
         (None, Some(_)) => limpio.replace(',', ""),
-        (None, None) => limpio.replace('_', "").replace(' ', ""),
+        (None, None) => limpio.replace(['_', ' '], ""),
     };
 
     let n: f64 = normalizado.parse().ok()?;
@@ -378,6 +378,21 @@ pub fn a_matriz(filas: &[crate::models::Fila]) -> (Vec<String>, Vec<Vec<String>>
     (columnas, datos)
 }
 
+/// Percent-encodifica un componente de URL (usuario, clave, host, base de datos).
+pub fn escapar_url(texto: &str) -> String {
+    let mut salida = String::with_capacity(texto.len());
+    for b in texto.as_bytes() {
+        let c = *b;
+        let seguro = c.is_ascii_alphanumeric() || matches!(c, b'-' | b'_' | b'.' | b'~');
+        if seguro {
+            salida.push(c as char);
+        } else {
+            salida.push_str(&format!("%{c:02X}"));
+        }
+    }
+    salida
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -434,19 +449,4 @@ mod tests {
         assert_eq!(escapar_sql("O'Brien"), "O''Brien");
         assert_eq!(escapar_identificador("mi columna"), "\"mi columna\"");
     }
-}
-
-/// Percent-encodifica un componente de URL (usuario, clave, host, base de datos).
-pub fn escapar_url(texto: &str) -> String {
-    let mut salida = String::with_capacity(texto.len());
-    for b in texto.as_bytes() {
-        let c = *b;
-        let seguro = c.is_ascii_alphanumeric() || matches!(c, b'-' | b'_' | b'.' | b'~');
-        if seguro {
-            salida.push(c as char);
-        } else {
-            salida.push_str(&format!("%{c:02X}"));
-        }
-    }
-    salida
 }

@@ -303,7 +303,6 @@ fn predicado_a_sql(pred: &Predicado, d: Dialecto) -> Resultado<(String, Vec<Stri
             vec![],
         ),
     })
-    .map(|(sql, params)| (sql, params))
 }
 
 /// Evalua un predicado sobre una fila en memoria.
@@ -486,16 +485,28 @@ fn es_booleano(valor: &str, esperado: bool) -> bool {
 }
 
 /// Filtra, ordena y pagina un conjunto de filas en memoria.
+/// Opciones de presentacion al filtrar en memoria.
+#[derive(Debug, Clone, Default)]
+pub struct Vista {
+    pub orden_por: String,
+    pub orden_desc: bool,
+    pub desplazamiento: u32,
+    pub limite: u32,
+}
+
 pub fn aplicar_en_memoria(
     filas: Vec<Fila>,
     preds: &[(Predicado, Conector)],
     modo: Conector,
     texto: &str,
-    orden_por: &str,
-    orden_desc: bool,
-    desplazamiento: u32,
-    limite: u32,
+    vista: &Vista,
 ) -> Vec<Fila> {
+    let (orden_por, orden_desc, desplazamiento, limite) = (
+        vista.orden_por.as_str(),
+        vista.orden_desc,
+        vista.desplazamiento,
+        vista.limite,
+    );
     let mut filtradas: Vec<Fila> = filas
         .into_iter()
         .filter(|f| fila_cumple(f, preds, modo, texto))
@@ -577,7 +588,7 @@ pub fn describir_columnas(
                     0.0
                 };
             }
-            frecuentes.sort_by(|a, b| b.cuenta.cmp(&a.cuenta));
+            frecuentes.sort_by_key(|f| std::cmp::Reverse(f.cuenta));
 
             // Tipo mayoritario entre los valores presentes.
             let muestras: Vec<String> = filas
@@ -769,16 +780,17 @@ pub fn filtrar_filas(
         })
         .collect();
 
-    let preds_orden = predicados(&peticion.filtros)?;
     Ok(aplicar_en_memoria(
         filtradas,
-        &preds_orden,
+        &preds,
         modo,
         "",
-        &peticion.ordenar_por,
-        peticion.orden_desc,
-        peticion.desplazamiento,
-        peticion.limite.clamp(1, 100_000),
+        &Vista {
+            orden_por: peticion.ordenar_por.clone(),
+            orden_desc: peticion.orden_desc,
+            desplazamiento: peticion.desplazamiento,
+            limite: peticion.limite.clamp(1, 100_000),
+        },
     ))
 }
 
@@ -822,7 +834,7 @@ mod tests {
     #[test]
     fn filtra_por_texto_sin_acentos() {
         let f = fila();
-        let preds = vec![(
+        let preds = [(
             Predicado::Columna {
                 columna: "nombre".into(),
                 op: Operador::Contiene,
@@ -943,7 +955,17 @@ mod tests {
                 valores: BTreeMap::from([("n".to_string(), Some(i.to_string()))]),
             })
             .collect();
-        let salida = aplicar_en_memoria(filas, &[], Conector::Y, "", "", false, 10, 5);
+        let salida = aplicar_en_memoria(
+            filas,
+            &[],
+            Conector::Y,
+            "",
+            &Vista {
+                desplazamiento: 10,
+                limite: 5,
+                ..Vista::default()
+            },
+        );
         assert_eq!(salida.len(), 5);
         assert_eq!(salida[0].valores.get("n").unwrap().as_deref(), Some("10"));
     }

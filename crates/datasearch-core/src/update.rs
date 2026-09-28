@@ -36,6 +36,8 @@ struct Release {
 struct Activo {
     name: String,
     browser_download_url: String,
+    /// Tamano del fichero en bytes, para informar al usuario.
+    #[allow(dead_code)]
     size: u64,
 }
 
