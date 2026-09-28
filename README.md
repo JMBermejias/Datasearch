@@ -83,8 +83,12 @@ sudo apt install libwebkit2gtk-4.1-0 libgtk-3-0 libayatana-appindicator3-1
 ### Android
 
 Descargue el fichero `.apk` de la release, cópielo en el teléfono y ábralo.
-Si el sistema lo bloquea, active **«Instalar aplicaciones de orígenes
-desconocidos»** para el explorador de archivos que lo abra.
+Como el APK no está firmado con una clave de Google Play, Android lo marcará
+como de origen desconocido: active **«Instalar aplicaciones desconocidas»**
+para el explorador que lo abra (Ajustes → Aplicaciones → Acceso especial, o
+Ajustes → Seguridad según la versión).
+
+Las instrucciones completas están en [docs/INSTALACION.md](docs/INSTALACION.md).
 
 Requisitos: Android 7.0 (API 24) o superior, arquitectura `arm64-v8a` o
 `aarch64`.
@@ -395,6 +399,8 @@ DataSearch/
 │   └── icons/                  Iconos de la aplicación
 ├── .github/workflows/          Compilación automática y releases
 └── docs/                       Documentación adicional
+    ├── INSTALACION.md            Instalación en Linux y en Android
+    └── SEGURIDAD.md              Cómo se protegen los datos
 ```
 
 La lógica de negocio no depende de la interfaz: el núcleo Rust se puede

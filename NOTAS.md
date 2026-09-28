@@ -18,9 +18,22 @@ La aplicacion queda en el menu de aplicaciones y se puede lanzar con
 
 ### Android
 
-Copie el fichero `.apk` en el telefono y abralo. Si el sistema lo bloquea,
-active «Instalar aplicaciones de origenes desconocidos» para el explorador
-que lo abra. Requiere Android 7.0 o superior.
+Copie el fichero `.apk` en el telefono y abralo.
+
+El APK **no esta firmado con una clave de Google Play**, por lo que Android
+lo marcara como de origen desconocido. Para instalarlo:
+
+1. Abra **Ajustes → Aplicaciones → Acceso especial → Instalar aplicaciones
+   desconocidas** (en Android 8 o posterior puede estar en **Ajustes →
+   Seguridad**).
+2. Elija la aplicacion desde la que abre el fichero (archivos o navegador).
+3. Active **Permitir de esta fuente**.
+4. Vuelva a abrir el `.apk`.
+
+Requiere Android 7.0 (API 24) o superior y unos 60 MB de espacio.
+
+Consulte [`docs/INSTALACION.md`](docs/INSTALACION.md) para el detalle de la
+instalacion en Linux y en Android.
 
 ## Primer acceso
 
