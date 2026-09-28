@@ -59,7 +59,7 @@ impl AppState {
 /// Macro para obtener el contexto autorizado a partir del token.
 macro_rules! contexto {
     ($estado:expr, $token:expr) => {
-        $estado.auth.contexto($token)?
+        $estado.auth.contexto($token.as_str())?
     };
 }
 
