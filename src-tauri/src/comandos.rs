@@ -12,9 +12,9 @@ use datasearch_core::auth::{Contexto, ServicioAuth};
 use datasearch_core::error::{Error, Resultado};
 use datasearch_core::export;
 use datasearch_core::models::{
-    self, Credenciales, Documento, Estado, FormatoExportacion, ImagenDocumento,
-    PeticionAnalisis, PeticionBusqueda, PeticionDashboard, Permisos, Rol, SolicitudFuente,
-    SolicitudRegistro, Usuario,
+    self, Credenciales, Documento, Estado, FormatoExportacion, ImagenDocumento, Permisos,
+    PeticionAnalisis, PeticionBusqueda, PeticionDashboard, Rol, SolicitudFuente, SolicitudRegistro,
+    Usuario,
 };
 use datasearch_core::service::ServicioBusqueda;
 use datasearch_core::sources::ServicioFuentes;
@@ -116,9 +116,26 @@ fn tipos_fuente() -> Vec<serde_json::Value> {
 fn operadores() -> Vec<serde_json::Value> {
     use models::Operador::*;
     [
-        Contiene, NoContiene, EmpiezaCon, TerminaCon, Igual, Distinto, Mayor, MayorIgual,
-        Menor, MenorIgual, Entre, EnLista, NoEnLista, EsNulo, NoEsNulo, Regex, Vacio,
-        NoVacio, EsVerdadero, EsFalso,
+        Contiene,
+        NoContiene,
+        EmpiezaCon,
+        TerminaCon,
+        Igual,
+        Distinto,
+        Mayor,
+        MayorIgual,
+        Menor,
+        MenorIgual,
+        Entre,
+        EnLista,
+        NoEnLista,
+        EsNulo,
+        NoEsNulo,
+        Regex,
+        Vacio,
+        NoVacio,
+        EsVerdadero,
+        EsFalso,
     ]
     .iter()
     .map(|o| {
@@ -278,9 +295,15 @@ pub fn mi_perfil(estado: State<'_, AppState>, token: String) -> Resultado<serde_
     let usuario = estado.auth.usuario_de_token(&token)?;
     let fuentes = estado.fuentes.listar(&ctx)?;
     let auditoria = if ctx.es_admin() {
-        estado.db.auditoria_de_usuario(ctx.id_usuario, 40).unwrap_or_default()
+        estado
+            .db
+            .auditoria_de_usuario(ctx.id_usuario, 40)
+            .unwrap_or_default()
     } else if usuario.permisos.ver_auditoria {
-        estado.db.auditoria_de_usuario(ctx.id_usuario, 40).unwrap_or_default()
+        estado
+            .db
+            .auditoria_de_usuario(ctx.id_usuario, 40)
+            .unwrap_or_default()
     } else {
         Vec::new()
     };
@@ -331,7 +354,10 @@ pub fn cambiar_contrasena(
 // ======================================================================
 
 #[tauri::command]
-pub fn listar_fuentes(estado: State<'_, AppState>, token: String) -> Resultado<Vec<models::Fuente>> {
+pub fn listar_fuentes(
+    estado: State<'_, AppState>,
+    token: String,
+) -> Resultado<Vec<models::Fuente>> {
     let ctx = contexto!(estado, token);
     estado.fuentes.listar(&ctx)
 }
@@ -505,7 +531,10 @@ pub async fn analizar(
 ) -> Resultado<models::RespuestaAnalisis> {
     let ctx = contexto!(estado, token);
     if !peticion.es_analisis_confirmado {
-        let _ = app.emit("analisis:requiere_confirmacion", peticion.comentario.clone());
+        let _ = app.emit(
+            "analisis:requiere_confirmacion",
+            peticion.comentario.clone(),
+        );
         return Err(Error::Validacion(
             "Pulse 'Confirmar y analizar' para ejecutar el analisis".into(),
         ));
@@ -681,9 +710,7 @@ pub async fn descargar_actualizacion(
         total += trozo.len() as u64;
         let _ = app.emit("actualizacion:progreso", total);
     }
-    escritor
-        .flush()
-        .map_err(|e| Error::Red(e.to_string()))?;
+    escritor.flush().map_err(|e| Error::Red(e.to_string()))?;
     let _ = app.emit("actualizacion:fin", total);
 
     Ok(serde_json::json!({

@@ -34,9 +34,7 @@ pub fn run() {
         })
         .on_window_event(|ventana, evento| {
             // Al cerrarse la ventana principal se cierra toda la aplicacion.
-            if matches!(evento, tauri::WindowEvent::Destroyed)
-                && ventana.label() == "principal"
-            {
+            if matches!(evento, tauri::WindowEvent::Destroyed) && ventana.label() == "principal" {
                 std::process::exit(0);
             }
         })
