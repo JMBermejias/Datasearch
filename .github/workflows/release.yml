@@ -117,14 +117,29 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      - name: Preparar el SDK de Android
-        uses: android-actions/setup-android@v3
+      # El SDK se instala a mano: la accion setup-android intenta instalar el
+      # paquete obsoleto "tools", que ya no esta en el repositorio de Google y
+      # hace que el paso falle en runners nuevos.
+      - name: Instalar el SDK de Android
+        run: |
+          set -euo pipefail
+          SDK="$RUNNER_TEMP/android-sdk"
+          mkdir -p "$SDK/cmdline-tools"
+          curl -fsSL -o /tmp/tools.zip \
+            https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
+          unzip -q -o /tmp/tools.zip -d "$SDK/cmdline-tools"
+          mv "$SDK/cmdline-tools/cmdline-tools" "$SDK/cmdline-tools/latest"
+          echo "ANDROID_HOME=$SDK" >> "$GITHUB_ENV"
+          echo "ANDROID_SDK_ROOT=$SDK" >> "$GITHUB_ENV"
+          echo "$SDK/cmdline-tools/latest/bin" >> "$GITHUB_PATH"
+          echo "$SDK/platform-tools" >> "$GITHUB_PATH"
 
       - name: Aceptar las licencias e instalar los componentes
         run: |
-          yes | sdkmanager --licenses > /dev/null 2>&1 || true
+          set -euo pipefail
+          sdkmanager --version
+          yes | sdkmanager --licenses > /dev/null || true
           sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
-          sdkmanager --list_installed | head -20
 
       - name: Instalar Rust estable con el objetivo Android
         uses: dtolnay/rust-toolchain@stable
