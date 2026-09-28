@@ -42,7 +42,7 @@ pub fn carpeta_descargas() -> PathBuf {
         }
     }
     let home = std::env::var("HOME").unwrap_or_else(|_| ".".to_string());
-    let base = PathBuf::from(home).join("Descargas");
+    let base = PathBuf::from(&home).join("Descargas");
     if base.is_dir() {
         base
     } else {

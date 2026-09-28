@@ -20,6 +20,7 @@ use datasearch_core::service::ServicioBusqueda;
 use datasearch_core::sources::ServicioFuentes;
 use datasearch_core::update;
 use datasearch_core::{NOMBRE_APP, VERSION};
+use std::io::Write;
 use std::path::PathBuf;
 use std::sync::Arc;
 use tauri::{AppHandle, Emitter, Manager, State};
@@ -703,7 +704,6 @@ pub async fn descargar_actualizacion(
     let mut escritor = destino;
     while let Some(trozo) = flujo.next().await {
         let trozo = trozo.map_err(|e| Error::Red(e.to_string()))?;
-        use std::io::Write;
         escritor
             .write_all(&trozo)
             .map_err(|e| Error::Red(format!("No se pudo escribir el fichero: {e}")))?;

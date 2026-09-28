@@ -81,10 +81,10 @@ pub fn run() {
             comandos::AppState::nuevo()
                 .unwrap_or_else(|e| panic!("no se pudo inicializar DataSearch: {e}")),
         )
-        .run(tauri::generate_context!())
+        .build(tauri::generate_context!())
         .expect("no se pudo iniciar la aplicacion")
         .run(|_app, _evento| {
-            // La aplicacion se cierra con la ventana principal.
+            // La aplicacion se cierra al cerrar la ventana principal.
         });
 }
 
