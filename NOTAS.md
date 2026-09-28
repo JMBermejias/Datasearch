@@ -1,4 +1,4 @@
-# DataSearch 1.0.1
+# DataSearch 1.0.2
 
 **Copyright (c) 2026 Jose Manuel Bernabeu Mejias · Licencia MIT**
 
@@ -47,7 +47,13 @@ Cambie la contrasena en cuanto entre: **Credenciales → Cambiar contrasena**.
 El resto de usuarios se registran indicando todos sus datos personales; la
 cuenta queda pendiente hasta que el administrador la verifica.
 
-## Correcciones de esta version
+## Mejoras de esta version
+
+- **La aplicacion arranca con la ventana maximizada**, ocupando todo el
+  espacio disponible de la pantalla, tanto al abrirla desde el menu de
+  aplicaciones como al ejecutarla desde la terminal.
+
+## Correcciones de la version anterior
 
 - **Se corrige el icono del escritorio.** El fichero `.desktop` declaraba
   `Icon=datasearch` pero los iconos se instalaban como `datasearch-tauri.png`,

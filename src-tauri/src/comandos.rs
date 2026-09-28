@@ -749,9 +749,19 @@ pub fn mostrar_principal(app: &AppHandle) {
     }
 }
 
+/// Muestra la ventana principal ya maximizada.
+///
+/// La ventana se declara oculta para evitar el destello de arranque. Al
+/// mostrarla se maximiza, de modo que el usuario empieza con todo el espacio
+/// disponible, tanto si arranca desde el menu como desde la terminal.
 #[tauri::command]
 pub fn mostrar_ventana_principal(app: AppHandle) {
-    mostrar_principal(&app);
+    if let Some(ventana) = app.get_webview_window("principal") {
+        #[cfg(desktop)]
+        let _ = ventana.maximize();
+        let _ = ventana.show();
+        let _ = ventana.set_focus();
+    }
 }
 
 /// Abre la ventana de actualizacion con los datos de la nueva version.

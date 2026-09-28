@@ -22,9 +22,12 @@ pub fn run() {
         .setup(|app| {
             // Se arranca la comprobacion de actualizaciones en segundo plano.
             // Si no hay conexion, la aplicacion sigue funcionando igual.
-            let ventana = app.get_webview_window("principal");
-            if let Some(v) = &ventana {
-                let _ = v.hide();
+            if let Some(ventana) = app.get_webview_window("principal") {
+                let _ = ventana.hide();
+                // En escritorio se abre maximizada; en movil la ventana ya
+                // ocupa toda la pantalla.
+                #[cfg(desktop)]
+                let _ = ventana.maximize();
             }
             let handle = app.handle().clone();
             tauri::async_runtime::spawn(async move {
