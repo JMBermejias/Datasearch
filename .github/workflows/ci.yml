@@ -1,0 +1,97 @@
+# Copyright (c) 2026 Jose Manuel Bernabeu Mejias - Licencia MIT
+# Revision Continua: comprueba el nucleo, el frontend y compila un paquete
+# de Linux en cada cambio. La release completa se genera en release.yml.
+
+name: Revision Continua
+
+on:
+  push:
+    branches: ["main", "master"]
+  pull_request:
+    branches: ["main", "master"]
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+
+jobs:
+  nucleo:
+    name: Nucleo Rust
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Comprobar el formato
+        run: cargo fmt --all -- --check
+
+      - name: Analisis estatico
+        run: cargo clippy --workspace --all-targets -- --deny warnings
+
+      - name: Ejecutar las pruebas
+        run: cargo test --workspace
+
+  frontend:
+    name: Frontend
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Comprobar los tipos
+        run: npm run typecheck
+
+      - name: Compilar
+        run: npx vite build
+
+  linux:
+    name: Compilacion en Linux
+    runs-on: ubuntu-22.04
+    needs: [nucleo, frontend]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Instalar tauri-cli
+        run: cargo install tauri-cli --version "^2.0" --locked
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: ./src-tauri
+
+      - name: Dependencias del sistema
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libwebkit2gtk-4.1-dev build-essential curl wget file \
+            libxdo-dev libssl-dev libayatana-appindicator3-dev \
+            librsvg2-dev patchelf
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Compilar el paquete
+        run: npm run tauri build -- --bundles deb
+
+      - name: Comprobar que se ha generado el paquete
+        run: ls -la target/release/bundle/deb/

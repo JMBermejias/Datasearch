@@ -1,0 +1,202 @@
+# Copyright (c) 2026 Jose Manuel Bernabeu Mejias - Licencia MIT
+# Compilacion automatica: Linux (.deb y AppImage) y Android (.apk).
+# Los artefactos se adjuntan a la release del tag correspondiente.
+
+name: Compilar y publicar
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      publicar:
+        description: "Publicar la release en GitHub"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+
+jobs:
+  # -------------------------------------------------------------------
+  # Linux: .deb para Zorin OS y demas distribuciones
+  # -------------------------------------------------------------------
+  linux:
+    name: Linux (.deb y AppImage)
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Obtener el codigo fuente
+        uses: actions/checkout@v4
+
+      - name: Instalar Rust estable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-unknown-linux-gnu
+
+      - name: Instalar herramientas de Rust
+        run: cargo install tauri-cli --version "^2.0" --locked
+
+      - name: Cache de compilacion
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-
+
+      - name: Instalar dependencias del sistema
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libwebkit2gtk-4.1-dev \
+            build-essential \
+            curl \
+            wget \
+            file \
+            libxdo-dev \
+            libssl-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            libssl-dev \
+            patchelf
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Instalar dependencias del frontend
+        run: npm ci
+
+      - name: Ejecutar las pruebas del nucleo
+        run: cargo test -p datasearch-core
+
+      - name: Comprobar los tipos del frontend
+        run: npm run typecheck
+
+      - name: Compilar el paquete de Linux
+        run: npm run tauri build -- --bundles deb,appimage
+
+      - name: Recoger los paquetes generados
+        run: |
+          mkdir -p Artefactos
+          find target/release/bundle -name "*.deb"   -exec cp {} Artefactos/ \;
+          find target/release/bundle -name "*.AppImage" -exec cp {} Artefactos/ \;
+          ls -la Artefactos/
+
+      - name: Subir los paquetes como artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: datasearch-linux
+          path: Artefactos/
+          if-no-files-found: error
+
+  # -------------------------------------------------------------------
+  # Android: .apk
+  # -------------------------------------------------------------------
+  android:
+    name: Android (.apk)
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Obtener el codigo fuente
+        uses: actions/checkout@v4
+
+      - name: Preparar el SDK de Android
+        uses: android-actions/setup-android@v3
+
+      - name: Instalar Rust estable con el objetivo Android
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android,armv7-linux-androideabi,x86_64-linux-android
+
+      - name: Instalar cargo-ndk
+        uses: nttld/setup-ndk@v1
+        id: ndk
+        with:
+          ndk-version: r26d
+
+      - name: Instalar herramientas de Rust
+        run: cargo install tauri-cli --version "^2.0" --locked
+
+      - name: Definir las variables del NDK
+        run: |
+          echo "ANDROID_NDK_HOME=${{ steps.ndk.outputs.ndk-path }}" >> "$GITHUB_ENV"
+          echo "ANDROID_NDK_ROOT=${{ steps.ndk.outputs.ndk-path }}" >> "$GITHUB_ENV"
+          echo "NDK_HOME=${{ steps.ndk.outputs.ndk-path }}" >> "$GITHUB_ENV"
+          echo "TAURI_ANDROID_PROJECT_PATH=${{ github.workspace }}/src-tauri/gen/android" >> "$GITHUB_ENV"
+
+      - name: Cache de compilacion
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-android-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-android-
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Instalar dependencias del frontend
+        run: npm ci
+
+      - name: Generar el proyecto base de Android
+        run: npm run tauri android init
+
+      - name: Compilar el APK
+        run: npm run tauri android build --apk --target aarch64
+
+      - name: Recoger el APK generado
+        run: |
+          mkdir -p Artefactos
+          find src-tauri/gen/android/app/build/outputs/apk -name "*.apk" -exec cp {} Artefactos/ \;
+          ls -la Artefactos/
+
+      - name: Subir el APK como artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: datasearch-android
+          path: Artefactos/
+          if-no-files-found: error
+
+  # -------------------------------------------------------------------
+  # Publicacion de la release
+  # -------------------------------------------------------------------
+  publicar:
+    name: Publicar release
+    needs: [linux, android]
+    runs-on: ubuntu-22.04
+    if: startsWith(github.ref, 'refs/tags/v') || inputs.publicar
+    permissions:
+      contents: write
+    steps:
+      - name: Descargar los artefactos
+        uses: actions/download-artifact@v4
+        with:
+          path: Paquetes
+          merge-multiple: true
+
+      - name: Listar los paquetes
+        run: find Paquetes -type f -exec ls -la {} \;
+
+      - name: Publicar la release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: Paquetes/*
+          name: DataSearch ${{ github.ref_name }}
+          body_path: NOTAS.md
+          draft: false
+          prerelease: false
+          generate_release_notes: true

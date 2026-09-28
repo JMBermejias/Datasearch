@@ -1,0 +1,71 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "DataSearch",
+  "version": "1.0.0",
+  "identifier": "com.jmbernabu.datasearch",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "withGlobalTauri": false,
+    "windows": [
+      {
+        "label": "principal",
+        "title": "DataSearch",
+        "width": 1360,
+        "height": 860,
+        "minWidth": 960,
+        "minHeight": 640,
+        "resizable": true,
+        "fullscreen": false,
+        "center": true,
+        "visible": false,
+        "theme": "Light"
+      },
+      {
+        "label": "actualizacion",
+        "title": "Actualizacion de DataSearch",
+        "url": "actualizacion.html",
+        "width": 640,
+        "height": 560,
+        "resizable": true,
+        "center": true,
+        "visible": false,
+        "alwaysOnTop": false,
+        "decorations": true
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' ipc: http://ipc.localhost"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["deb", "appimage", "apk"],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.png"
+    ],
+    "copyright": "Copyright (c) 2026 Jose Manuel Bernabeu Mejias - Licencia MIT",
+    "category": "Utility",
+    "shortDescription": "Extraccion, filtrado y analisis de datos",
+    "longDescription": "DataSearch permite extraer, filtrar, analizar y visualizar datos procedentes de bases de datos locales, remotas y de la web, y exportarlos a Excel o PDF. Copyright (c) 2026 Jose Manuel Bernabeu Mejias. Licencia MIT.",
+    "publisher": "Jose Manuel Bernabeu Mejias",
+    "homepage": "https://github.com/JMBermejias/Datasearch",
+    "linux": {
+      "deb": {
+        "depends": ["libwebkit2gtk-4.1-0", "libgtk-3-0", "libayatana-appindicator3-1"],
+        "desktopTemplate": "datasearch.desktop"
+      }
+    },
+    "android": {
+      "minSdkVersion": 24
+    }
+  },
+  "plugins": {}
+}

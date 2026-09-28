@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=DataSearch
+GenericName=Analisis de datos
+Comment=Extraccion, filtrado, analisis y visualizacion de datos
+Exec=datasearch-tauri
+Icon=datasearch
+Terminal=false
+Categories=Development;Database;Utility;
+Keywords=datos;sql;analisis;dashboard;excel;pdf;base de datos;
+StartupNotify=true
+StartupWMClass=datasearch-tauri
