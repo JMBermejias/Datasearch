@@ -95,13 +95,7 @@ pub async fn comprobar_actualizaciones(app: tauri::AppHandle) {
     let info = datasearch_core::update::comprobar_actualizaciones().await;
     if info.hay_actualizacion {
         let _ = app.emit("actualizacion:disponible", &info);
-        if let Some(ventana) = app.get_webview_window("actualizacion") {
-            let _ = ventana.emit("actualizacion:datos", &info);
-            let _ = ventana.show();
-            let _ = ventana.set_focus();
-        } else {
-            comandos::abrir_ventana_actualizacion(&app, &info);
-        }
+        comandos::abrir_ventana_actualizacion(&app, &info);
     } else {
         let _ = app.emit("actualizacion:sin_novedades", &info);
     }

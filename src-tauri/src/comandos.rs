@@ -755,25 +755,20 @@ pub fn mostrar_ventana_principal(app: AppHandle) {
 }
 
 /// Abre la ventana de actualizacion con los datos de la nueva version.
+///
+/// La ventana esta declarada en `tauri.conf.json` y nace oculta, de modo que
+/// solo hay que mostrarla. Asi el mismo codigo sirve para Linux y Android.
 pub fn abrir_ventana_actualizacion(app: &AppHandle, info: &models::InfoVersion) {
-    use tauri::WebviewUrl;
-    if let Some(ventana) = app.get_webview_window("actualizacion") {
-        let _ = ventana.show();
-        let _ = ventana.set_focus();
-        let _ = ventana.emit("actualizacion:datos", info);
-        return;
-    }
-    let url = WebviewUrl::App("actualizacion.html".into());
-    match tauri::WebviewWindowBuilder::new(app, "actualizacion", url)
-        .title("Actualizacion de DataSearch")
-        .inner_size(640.0, 560.0)
-        .resizable(true)
-        .center()
-        .build()
-    {
-        Ok(ventana) => {
+    match app.get_webview_window("actualizacion") {
+        Some(ventana) => {
             let _ = ventana.emit("actualizacion:datos", info);
+            let _ = ventana.show();
+            let _ = ventana.set_focus();
         }
-        Err(e) => eprintln!("[DataSearch] No se pudo abrir la ventana de actualizacion: {e}"),
+        None => {
+            // Si no existe la ventana secundaria, la ventana principal muestra
+            // el aviso de actualizacion en su pagina de ajustes.
+            let _ = app.emit("actualizacion:disponible", info);
+        }
     }
 }
