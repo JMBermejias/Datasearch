@@ -185,7 +185,9 @@ jobs:
         run: npm run tauri android init
 
       - name: Compilar el APK
-        run: npm run tauri android build --apk --target aarch64
+        # Sin --target se compilan todas las arquitecturas admitidas, de modo
+        # que el APK sirve tanto para telefonos ARM como para emuladores x86_64.
+        run: npm run tauri android build --apk
 
       - name: Recoger el APK generado
         run: |
